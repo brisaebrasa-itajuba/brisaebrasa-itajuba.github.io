@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brisa & Brasa — Menu Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g:#2D5A3D;--gm:#4A7C5F;--gl:#8FAF96;
+  --bg-b:#E8E4DC;--bg-b2:#D5D1C9;
+  --dk:#110A05;--or:#E87722;--am:#C8820A;
+  --pk:#E91E8C;--pu:#9B59B6;
+  --sh:#0E0B1E;
+}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-serif;background:#000;}
+
+/* ── DECK ── */
+.deck{position:relative;width:100%;height:100%;overflow:hidden;}
+
+/* ── SLIDES ── */
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;overflow:hidden;
+  transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);
+  transform:translateX(50px);
+}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0);z-index:2;}
+.slide.leaving{opacity:0;transform:translateX(-50px);pointer-events:none;z-index:1;}
+
+/* THEMES */
+.sb{background:linear-gradient(145deg,#D8D4CC 0%,#EAE6DE 55%,#CFCBC3 100%);}
+.sr{background:linear-gradient(145deg,#120B06 0%,#1E1209 55%,#0D0703 100%);}
+.ss{background:linear-gradient(145deg,#0F0C20 0%,#1C1838 55%,#0A0718 100%);}
+
+/* COVER */
+.cover{flex-direction:row!important;align-items:stretch!important;justify-content:flex-start!important;}
+.ch{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5vh 4vw;position:relative;overflow:hidden;}
+.ch-b{background:linear-gradient(155deg,#D5D1C9,#EAE6DE);}
+.ch-r{background:linear-gradient(155deg,#1A0F0A,#2A1508);}
+
+/* TOP BAR */
+.tbar{position:absolute;top:0;left:0;right:0;height:5px;z-index:5;}
+.tb-g{background:var(--g);}
+.tb-o{background:var(--or);}
+.tb-s{background:linear-gradient(90deg,var(--g) 50%,var(--or) 50%);}
+.tb-pk{background:linear-gradient(90deg,var(--pk),var(--pu));}
+
+/* DECORATIVE BLOB */
+.blob{position:absolute;border-radius:60% 40% 70% 30%/50% 60% 40% 50%;pointer-events:none;}
+
+/* GHOST LETTER (background typographic element) */
+.ghost{
+  position:absolute;
+  font-size:clamp(140px,32vw,520px);font-weight:900;
+  opacity:.045;line-height:1;pointer-events:none;user-select:none;
+  right:-4vw;top:50%;transform:translateY(-50%);
+  letter-spacing:-.02em;
+}
+.ghost-g{color:var(--g);}
+.ghost-o{color:var(--or);}
+
+/* SLIDE LABEL */
+.lbl{font-size:clamp(8px,.95vw,13px);font-weight:700;letter-spacing:.42em;text-transform:uppercase;margin-bottom:1.2vh;}
+.lbl-g{color:var(--gm);}
+.lbl-o{color:var(--or);}
+.lbl-pk{color:var(--pk);}
+
+/* HUGE NAME */
+.hname{
+  font-size:clamp(38px,8.2vw,122px);font-weight:900;
+  text-transform:uppercase;text-align:center;
+  letter-spacing:.04em;line-height:.95;
+  position:relative;z-index:2;
+}
+.hname-g{color:var(--g);}
+.hname-o{color:var(--or);}
+
+/* SECTION TITLE (intro pages) */
+.stitle{font-size:clamp(70px,17vw,260px);font-weight:900;letter-spacing:.06em;text-align:center;line-height:.9;}
+
+/* TAGLINE */
+.tag{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(12px,1.8vw,24px);text-align:center;}
+.tag-g{color:var(--gm);}
+.tag-o{color:#D4A97A;}
+.tag-pk{color:rgba(233,30,140,.9);}
+
+/* SEPARATOR */
+.sep{display:flex;align-items:center;gap:1.2vw;width:min(50vw,440px);margin:1.6vh auto;}
+.sep::before,.sep::after{content:'';flex:1;border-top:2px dotted;}
+.sep-g::before,.sep-g::after{border-color:rgba(74,124,95,.35);}
+.sep-o::before,.sep-o::after{border-color:rgba(232,119,34,.35);}
+.sep-pk::before,.sep-pk::after{border-color:rgba(233,30,140,.35);}
+.sep-icon{font-size:clamp(14px,1.8vw,22px);}
+
+/* INGREDIENT CHIPS */
+.ings{display:flex;gap:1.2vw;justify-content:center;flex-wrap:wrap;margin:1.4vh 0;}
+.ing{display:flex;flex-direction:column;align-items:center;gap:.5vh;padding:1.2vh 1.8vw;border-radius:10px;min-width:clamp(68px,9.5vw,118px);}
+.ing-g{background:rgba(45,90,61,.08);border:1px solid rgba(74,124,95,.22);}
+.ing-o{background:rgba(232,119,34,.08);border:1px solid rgba(232,119,34,.22);}
+.ing-i{font-size:clamp(18px,2.3vw,32px);}
+.ing-n{font-size:clamp(7px,.82vw,11px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;line-height:1.45;}
+.ing-n-g{color:var(--g);}
+.ing-n-o{color:#D4A97A;}
+
+/* DESCRIPTION */
+.dsc{font-size:clamp(10px,1.22vw,16px);line-height:1.75;text-align:center;max-width:min(62vw,680px);margin:.8vh auto;}
+.dsc-g{color:#4A6855;}
+.dsc-o{color:#C4936A;}
+
+/* PRICE BADGE */
+.price{font-size:clamp(13px,2vw,26px);font-weight:900;color:#fff;padding:.9vh 3.2vw;border-radius:50px;letter-spacing:.08em;margin-top:1.4vh;}
+.pr-g{background:var(--g);}
+.pr-o{background:var(--or);}
+.pr-pk{background:var(--pk);}
+
+/* FOOTER */
+.ftr{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:1.4vh 4vw;font-size:clamp(7px,.82vw,10px);font-weight:700;letter-spacing:.28em;text-transform:uppercase;}
+.ftr-g{color:var(--gm);}
+.ftr-o{color:rgba(232,119,34,.55);}
+
+/* DIVIDER LINE */
+.dv{height:2px;margin:.5vh auto;}
+.dv-g{background:var(--gm);}
+.dv-o{background:var(--or);}
+.dv-pk{background:var(--pk);}
+
+/* ICON ROW (intro pages) */
+.irow{display:flex;gap:3vw;justify-content:center;margin:2vh 0;}
+.iitem{display:flex;flex-direction:column;align-items:center;gap:1vh;}
+.icirc{border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:clamp(14px,2.2vw,30px);width:clamp(50px,6.5vw,82px);height:clamp(50px,6.5vw,82px);}
+.ic-g{border-color:var(--gm);color:var(--gm);}
+.ic-o{border-color:var(--or);color:var(--or);}
+.ilbl{font-size:clamp(7px,.8vw,10px);font-weight:700;letter-spacing:.18em;text-transform:uppercase;text-align:center;line-height:1.55;}
+.il-g{color:var(--g);}
+.il-o{color:var(--or);}
+.isep{width:1px;height:7vh;align-self:center;}
+.isep-g{background:rgba(74,124,95,.28);}
+.isep-o{background:rgba(232,119,34,.28);}
+
+/* QUOTE */
+.qt{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(12px,1.7vw,22px);text-align:center;margin:1.5vh 0;}
+
+/* SECTION ICON */
+.sico{font-size:clamp(28px,4.5vw,60px);margin-bottom:1.2vh;}
+
+/* GLOW */
+.glow-o{position:absolute;bottom:0;left:0;right:0;height:38%;background:radial-gradient(ellipse at center bottom,rgba(232,119,34,.38) 0%,transparent 70%);pointer-events:none;}
+.particle{position:absolute;border-radius:50%;background:rgba(232,119,34,.32);pointer-events:none;}
+
+/* ACOMP CARDS */
+.acard{background:rgba(255,255,255,.87);border-radius:12px;padding:1.7vh 2.5vw;display:flex;align-items:center;gap:1.8vw;width:min(72vw,680px);margin-bottom:1.4vh;box-shadow:0 2px 14px rgba(0,0,0,.07);}
+.aico{width:clamp(40px,5.5vw,68px);height:clamp(40px,5.5vw,68px);border-radius:50%;border:2px solid var(--gm);display:flex;align-items:center;justify-content:center;font-size:clamp(14px,2vw,26px);color:var(--g);flex-shrink:0;}
+.ainf{flex:1;}
+.aname{font-size:clamp(9px,1.1vw,14px);font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--g);margin-bottom:.35vh;}
+.adsc{font-size:clamp(8px,.95vw,13px);color:#6A8A75;line-height:1.5;}
+.aprice{background:var(--g);color:#fff;font-size:clamp(9px,1.1vw,14px);font-weight:800;padding:1vh 2vw;border-radius:9px;flex-shrink:0;letter-spacing:.04em;}
+
+/* DRINK ITEMS */
+.dsec-lbl{font-size:clamp(7px,.85vw,11px);font-weight:700;letter-spacing:.35em;color:var(--or);text-transform:uppercase;margin-bottom:.5vh;}
+.ditem{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.055);border-radius:7px;padding:.9vh 2.2vw;margin-bottom:.45vh;}
+.dname{font-size:clamp(10px,1.3vw,17px);color:rgba(255,200,120,.88);}
+.dprice{font-size:clamp(10px,1.3vw,17px);font-weight:700;color:var(--or);}
+
+/* SHAKE CARDS */
+.shcard{border:1px solid rgba(233,30,140,.3);border-radius:14px;padding:1.8vh 2.8vw;display:flex;align-items:center;gap:2.2vw;width:min(70vw,640px);margin-bottom:1.5vh;background:rgba(255,255,255,.04);}
+.shico{width:clamp(40px,5.2vw,66px);height:clamp(40px,5.2vw,66px);border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:clamp(16px,2vw,28px);flex-shrink:0;}
+.shinf{flex:1;}
+.shname{font-size:clamp(12px,1.5vw,20px);font-weight:700;color:#fff;margin-bottom:.25vh;}
+.shcmb{font-size:clamp(9px,1vw,14px);font-style:italic;margin-bottom:.5vh;}
+.shdsc{font-size:clamp(8px,.9vw,12px);color:rgba(255,255,255,.45);line-height:1.5;}
+.shprice{font-size:clamp(10px,1.3vw,17px);font-weight:800;color:#fff;padding:1vh 2vw;border-radius:9px;flex-shrink:0;}
+
+/* FULL MENU SPLIT */
+.fsplit{flex-direction:row!important;align-items:stretch!important;justify-content:flex-start!important;padding:0!important;}
+.fhalf{flex:1;padding:5.5vh 3.2vw;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;}
+.fh-g{background:linear-gradient(165deg,#D8D4CC,#EAE6DE);}
+.fh-r{background:linear-gradient(165deg,#1A0F0A,#2A1508);}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:1.3vh 0;border-bottom:1px solid;font-size:clamp(10px,1.32vw,17px);font-weight:500;width:100%;}
+.mr-g{border-color:rgba(74,124,95,.2);color:var(--g);}
+.mr-o{border-color:rgba(232,119,34,.18);color:rgba(232,150,80,.88);}
+.mpr{font-weight:800;font-size:clamp(9px,1.22vw,16px);}
+.mp-g{color:var(--g);}
+.mp-o{color:var(--or);}
+.mlbl{font-size:clamp(7px,.85vw,11px);font-weight:800;letter-spacing:.3em;text-transform:uppercase;text-align:center;margin-top:2.2vh;margin-bottom:.8vh;}
+
+/* FINAL SLIDE */
+.sf{background:linear-gradient(145deg,#101A13 0%,#1C2A1E 55%,#0D1508 100%);}
+
+/* CONTACT CARDS */
+.ccard{background:rgba(255,255,255,.07);border:1px solid rgba(232,119,34,.28);border-radius:13px;padding:1.8vh 3.5vw;text-align:center;min-width:clamp(130px,19vw,230px);}
+.ccl{font-size:clamp(7px,.85vw,11px);font-weight:700;letter-spacing:.35em;color:var(--or);text-transform:uppercase;margin-bottom:.6vh;}
+.ccv{font-size:clamp(12px,1.7vw,22px);font-weight:700;color:var(--or);}
+
+/* NAV BUTTONS */
+.nbtn{
+  position:fixed;top:50%;transform:translateY(-50%);
+  width:clamp(30px,3.5vw,48px);height:clamp(30px,3.5vw,48px);
+  border-radius:50%;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);
+  font-size:clamp(14px,1.7vw,22px);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  z-index:300;transition:background .2s,transform .2s;
+  backdrop-filter:blur(6px);
+}
+.nbtn:hover{background:rgba(255,255,255,.26);transform:translateY(-50%) scale(1.1);}
+#pb{left:1.2vw;}
+#nb{right:1.2vw;}
+
+/* PROGRESS BAR */
+#pgbar{position:fixed;bottom:0;left:0;height:3px;background:rgba(255,255,255,.55);z-index:300;transition:width .5s ease;}
+
+/* COUNTER */
+#ctr{position:fixed;top:1.8vh;right:2.5vw;font-size:clamp(8px,.85vw,12px);font-weight:700;letter-spacing:.25em;color:rgba(255,255,255,.45);z-index:300;}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ═══ S0 COVER ═══ -->
+<div class="slide cover active" id="s0">
+  <div class="tbar tb-s"></div>
+  <div class="ch ch-b">
+    <div class="blob" style="width:22vw;height:26vw;background:rgba(107,143,113,.18);top:-4vh;left:-4vw;"></div>
+    <div style="font-size:clamp(28px,4.5vw,62px);margin-bottom:1.5vh;">🌿</div>
+    <span class="lbl lbl-g">LINHA</span>
+    <div style="font-size:clamp(46px,9.5vw,128px);font-weight:900;color:var(--g);letter-spacing:.07em;">BRISA</div>
+    <div class="dv dv-g" style="width:min(9vw,120px);margin:1.2vh auto;"></div>
+    <p style="font-size:clamp(11px,1.45vw,18px);color:var(--g);text-align:center;line-height:1.95;margin-top:.8vh;">O frescor do jardim,<br>a leveza e o toque<br>das ervas finas.</p>
+  </div>
+  <!-- BADGE CENTER -->
+  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;width:clamp(65px,7.5vw,108px);height:clamp(65px,7.5vw,108px);border-radius:50%;background:#fff;border:3px solid var(--or);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 4px 26px rgba(0,0,0,.28);">
+    <div style="font-size:clamp(9px,1.4vw,17px);font-weight:800;color:#1A0F0A;line-height:1.3;">B&B</div>
+    <div style="font-size:clamp(6px,.75vw,9px);font-weight:700;color:var(--or);letter-spacing:.25em;">ITAJUBÁ</div>
+  </div>
+  <div class="ch ch-r">
+    <div class="glow-o"></div>
+    <div style="font-size:clamp(28px,4.5vw,62px);margin-bottom:1.5vh;">🔥</div>
+    <span class="lbl lbl-o">LINHA</span>
+    <div style="font-size:clamp(46px,9.5vw,128px);font-weight:900;color:var(--or);letter-spacing:.07em;">BRASA</div>
+    <div class="dv dv-o" style="width:min(9vw,120px);margin:1.2vh auto;"></div>
+    <p style="font-size:clamp(11px,1.45vw,18px);color:#D4A97A;text-align:center;line-height:1.95;margin-top:.8vh;">A intensidade do fogo,<br>o sabor da defumação<br>e a alma do churrasco.</p>
+  </div>
+  <div style="position:absolute;bottom:3.5vh;left:50%;transform:translateX(-50%);font-size:clamp(8px,1vw,13px);font-weight:800;letter-spacing:.38em;text-transform:uppercase;color:rgba(255,255,255,.58);text-shadow:0 2px 10px rgba(0,0,0,.6);white-space:nowrap;">SINTA A BRISA · PROVE A BRASA</div>
+</div>
+
+<!-- ═══ S1 BRISA INTRO ═══ -->
+<div class="slide sb" id="s1">
+  <div class="tbar tb-g"></div>
+  <div class="blob" style="width:22vw;height:26vw;background:rgba(107,143,113,.15);top:-3vh;left:-4vw;"></div>
+  <div class="blob" style="width:17vw;height:21vw;background:rgba(107,143,113,.11);bottom:7vh;right:-3vw;border-radius:40% 60% 30% 70%/60% 40% 60% 40%;"></div>
+  <div class="sico" style="color:var(--gm);">🌿</div>
+  <span class="lbl lbl-g">LINHA BRISA</span>
+  <div class="stitle hname-g">BRISA</div>
+  <div class="dv dv-g" style="width:min(8vw,100px);margin:1.4vh auto;"></div>
+  <p style="font-size:clamp(11px,1.42vw,18px);color:#3A5A47;text-align:center;line-height:1.95;max-width:58vw;margin:1.2vh auto;">O frescor do jardim em cada mordida. Ingredientes selecionados, ervas finas e uma harmonia perfeita entre leveza e sofisticação.</p>
+  <div class="irow" style="margin-top:2.2vh;">
+    <div class="iitem"><div class="icirc ic-g">🌿</div><div class="ilbl il-g">ERVAS<br>FRESCAS</div></div>
+    <div class="isep isep-g"></div>
+    <div class="iitem"><div class="icirc ic-g" style="font-size:clamp(12px,1.7vw,22px);">≈</div><div class="ilbl il-g">LEVE &<br>ELEGANTE</div></div>
+    <div class="isep isep-g"></div>
+    <div class="iitem"><div class="icirc ic-g" style="font-size:clamp(11px,1.6vw,20px);">✦</div><div class="ilbl il-g">INGREDIENTES<br>SELECIONADOS</div></div>
+  </div>
+  <div class="qt" style="color:var(--g);margin-top:2vh;">"Uma noite fresca e sofisticada"</div>
+  <div class="ftr ftr-g"><span>SABOR QUE VEM DA NATUREZA</span><span>🌿</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S2 O ORVALHO (BRISA) ═══ -->
+<div class="slide sb" id="s2">
+  <div class="tbar tb-g"></div>
+  <div class="blob" style="width:20vw;height:24vw;background:rgba(107,143,113,.13);top:-3vh;left:-3vw;"></div>
+  <div class="ghost ghost-g">O</div>
+  <span class="lbl lbl-g">LINHA BRISA</span>
+  <div class="hname hname-g">O ORVALHO</div>
+  <div class="tag tag-g" style="margin-top:.8vh;">Leve e Fresco</div>
+  <div class="sep sep-g"><span class="sep-icon">🌿</span></div>
+  <div class="ings">
+    <div class="ing ing-g"><span class="ing-i">🧀</span><span class="ing-n ing-n-g">QUEIJO<br>DE CABRA</span></div>
+    <div class="ing ing-g"><span class="ing-i">🥬</span><span class="ing-n ing-n-g">ESPINAFRE<br>BABY</span></div>
+    <div class="ing ing-g"><span class="ing-i">🥒</span><span class="ing-n ing-n-g">PEPINO<br>ARTESANAL</span></div>
+    <div class="ing ing-g"><span class="ing-i">≈</span><span class="ing-n ing-n-g">MOLHO<br>IOGURTE</span></div>
+  </div>
+  <div class="dsc dsc-g">Blend 140g com queijo de cabra cremoso, espinafre baby, pepino em conserva artesanal e molho de iogurte com dill fresco no pão de leite.</div>
+  <div class="price pr-g">R$ XX,XX</div>
+  <div class="ftr ftr-g"><span>SABOR QUE VEM DA NATUREZA</span><span>🌿</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S3 O BOTÂNICO (BRISA) ═══ -->
+<div class="slide sb" id="s3">
+  <div class="tbar tb-g"></div>
+  <div class="blob" style="width:18vw;height:22vw;background:rgba(107,143,113,.13);bottom:8vh;right:-2vw;border-radius:40% 60% 30% 70%;"></div>
+  <div class="ghost ghost-g">O</div>
+  <span class="lbl lbl-g">LINHA BRISA</span>
+  <div class="hname hname-g">O BOTÂNICO</div>
+  <div class="tag tag-g" style="margin-top:.8vh;">Elegância do Jardim em Cada Camada</div>
+  <div class="sep sep-g"><span class="sep-icon">🌿</span></div>
+  <div class="ings">
+    <div class="ing ing-g"><span class="ing-i">✦</span><span class="ing-n ing-n-g">PESTO<br>FRESCO</span></div>
+    <div class="ing ing-g"><span class="ing-i">🧀</span><span class="ing-n ing-n-g">QUEIJO<br>BRIE</span></div>
+    <div class="ing ing-g"><span class="ing-i">🌿</span><span class="ing-n ing-n-g">RÚCULA<br>SELVAGEM</span></div>
+    <div class="ing ing-g"><span class="ing-i">☀️</span><span class="ing-n ing-n-g">TOMATE<br>SECO</span></div>
+  </div>
+  <div class="dsc dsc-g">Blend 160g com queijo brie cremoso, rúcula selvagem, tomate seco ao azeite e pesto de manjericão fresco no pão de fermentação natural.</div>
+  <div class="price pr-g">R$ XX,XX</div>
+  <div class="ftr ftr-g"><span>SABOR QUE VEM DA NATUREZA</span><span>🌿</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S4 A VENTANIA (BRISA) ═══ -->
+<div class="slide sb" id="s4">
+  <div class="tbar tb-g"></div>
+  <div class="blob" style="width:20vw;height:24vw;background:rgba(107,143,113,.12);top:-3vh;left:-3vw;"></div>
+  <div class="ghost ghost-g">A</div>
+  <span class="lbl lbl-g">LINHA BRISA</span>
+  <div class="hname hname-g">A VENTANIA</div>
+  <div class="tag tag-g" style="margin-top:.8vh;">Equilíbrio Perfeito Entre Mar e Terra</div>
+  <div class="sep sep-g"><span class="sep-icon">🌿</span></div>
+  <div class="ings">
+    <div class="ing ing-g"><span class="ing-i">🧀</span><span class="ing-n ing-n-g">GOUDA<br>ARTESANAL</span></div>
+    <div class="ing ing-g"><span class="ing-i">🧅</span><span class="ing-n ing-n-g">CEBOLA<br>CARAMELIZADA</span></div>
+    <div class="ing ing-g"><span class="ing-i">🥬</span><span class="ing-n ing-n-g">ALFACE<br>CRESPA</span></div>
+    <div class="ing ing-g"><span class="ing-i">≈</span><span class="ing-n ing-n-g">MAIONESE<br>DE ERVAS</span></div>
+  </div>
+  <div class="dsc dsc-g">Blend 180g com queijo gouda artesanal, alface crespa, cebola roxa caramelizada e maionese de ervas finas no pão brioche macio.</div>
+  <div class="price pr-g">R$ XX,XX</div>
+  <div class="ftr ftr-g"><span>SABOR QUE VEM DA NATUREZA</span><span>🌿</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S5 O SERENO (BRISA) ═══ -->
+<div class="slide sb" id="s5">
+  <div class="tbar tb-g"></div>
+  <div class="blob" style="width:18vw;height:22vw;background:rgba(107,143,113,.12);bottom:8vh;right:-2vw;border-radius:40% 60% 30% 70%;"></div>
+  <div class="ghost ghost-g">O</div>
+  <span class="lbl lbl-g">LINHA BRISA</span>
+  <div class="hname hname-g">O SERENO</div>
+  <div class="tag tag-g" style="margin-top:.8vh;">Suave Como uma Manhã Tranquila</div>
+  <div class="sep sep-g"><span class="sep-icon">🌿</span></div>
+  <div class="ings">
+    <div class="ing ing-g"><span class="ing-i">🧀</span><span class="ing-n ing-n-g">CREAM<br>CHEESE</span></div>
+    <div class="ing ing-g"><span class="ing-i">🍅</span><span class="ing-n ing-n-g">TOMATE<br>ASSADO</span></div>
+    <div class="ing ing-g"><span class="ing-i">🥒</span><span class="ing-n ing-n-g">PEPINO<br>BABY</span></div>
+    <div class="ing ing-g"><span class="ing-i">≈</span><span class="ing-n ing-n-g">MOLHO<br>ENDRO</span></div>
+  </div>
+  <div class="dsc dsc-g">Blend 160g com cream cheese temperado, tomate cereja assado, pepino baby e molho de iogurte com endro no pão australiano.</div>
+  <div class="price pr-g">R$ XX,XX</div>
+  <div class="ftr ftr-g"><span>SABOR QUE VEM DA NATUREZA</span><span>🌿</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S6 A BRISA — ASSINATURA ═══ -->
+<div class="slide sb" id="s6">
+  <div class="tbar tb-g"></div>
+  <div class="blob" style="width:20vw;height:24vw;background:rgba(107,143,113,.13);top:-3vh;left:-3vw;"></div>
+  <div class="ghost ghost-g">A</div>
+  <span class="lbl lbl-g" style="color:var(--g);">⭐ ASSINATURA BRISA</span>
+  <div class="hname hname-g">A BRISA</div>
+  <div class="tag tag-g" style="margin-top:.8vh;">O Clássico que Ficou na Memória</div>
+  <div class="sep sep-g"><span class="sep-icon">⭐</span></div>
+  <div class="ings">
+    <div class="ing ing-g"><span class="ing-i">🌿</span><span class="ing-n ing-n-g">ERVAS<br>FRESCAS</span></div>
+    <div class="ing ing-g"><span class="ing-i">🧀</span><span class="ing-n ing-n-g">QUEIJO<br>DERRETIDO</span></div>
+    <div class="ing ing-g"><span class="ing-i">🍅</span><span class="ing-n ing-n-g">TOMATE<br>MADURO</span></div>
+    <div class="ing ing-g"><span class="ing-i">≈</span><span class="ing-n ing-n-g">MAIONESE<br>DE ERVAS</span></div>
+  </div>
+  <div class="dsc dsc-g">Blend 180g e queijo derretido no pão brioche macio, com alface americana, tomate maduro e a nossa maionese de ervas frescas.</div>
+  <div class="price pr-g">R$ XX,XX</div>
+  <div class="ftr ftr-g"><span>SABOR QUE VEM DA NATUREZA</span><span>🌿</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S7 BRASA INTRO ═══ -->
+<div class="slide sr" id="s7">
+  <div class="tbar tb-o"></div>
+  <div class="glow-o"></div>
+  <div class="particle" style="width:8px;height:8px;top:24vh;left:5vw;"></div>
+  <div class="particle" style="width:6px;height:6px;top:58vh;right:5vw;"></div>
+  <div class="sico">🔥</div>
+  <span class="lbl lbl-o">LINHA BRASA</span>
+  <div class="stitle hname-o">BRASA</div>
+  <div class="dv dv-o" style="width:min(8vw,100px);margin:1.4vh auto;"></div>
+  <p style="font-size:clamp(11px,1.42vw,18px);color:#C4936A;text-align:center;line-height:1.95;max-width:58vw;margin:1.2vh auto;">A intensidade do fogo, o sabor da defumação e a alma do churrasco artesanal. Ingredientes selecionados e preparo feito na brasa.</p>
+  <div class="irow" style="margin-top:2.2vh;">
+    <div class="iitem"><div class="icirc ic-o">🌡️</div><div class="ilbl il-o">SABOR DA<br>DEFUMAÇÃO</div></div>
+    <div class="isep isep-o"></div>
+    <div class="iitem"><div class="icirc ic-o">🔥</div><div class="ilbl il-o">FEITO NA<br>BRASA</div></div>
+    <div class="isep isep-o"></div>
+    <div class="iitem"><div class="icirc ic-o" style="font-size:clamp(11px,1.6vw,20px);">✦</div><div class="ilbl il-o">INGREDIENTES<br>SELECIONADOS</div></div>
+  </div>
+  <div class="qt" style="color:var(--or);margin-top:2vh;">"O calor intenso de uma grelha em chamas"</div>
+  <div class="ftr ftr-o"><span>SABOR QUE VEM DO FOGO</span><span>🔥</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S8 A CHAMA (BRASA) ═══ -->
+<div class="slide sr" id="s8">
+  <div class="tbar tb-o"></div>
+  <div class="glow-o"></div>
+  <div class="particle" style="width:8px;height:8px;top:22vh;left:5vw;"></div>
+  <div class="particle" style="width:6px;height:6px;top:62vh;right:5vw;"></div>
+  <div class="ghost ghost-o">A</div>
+  <span class="lbl lbl-o">LINHA BRASA</span>
+  <div class="hname hname-o">A CHAMA</div>
+  <div class="tag tag-o" style="margin-top:.8vh;">Onde o Fogo Encontra o Sabor</div>
+  <div class="sep sep-o"><span class="sep-icon">🔥</span></div>
+  <div class="ings">
+    <div class="ing ing-o"><span class="ing-i">🌶️</span><span class="ing-n ing-n-o">JALAPEÑO<br>FRESCO</span></div>
+    <div class="ing ing-o"><span class="ing-i">🥓</span><span class="ing-n ing-n-o">BACON<br>CROCANTE</span></div>
+    <div class="ing ing-o"><span class="ing-i">🧀</span><span class="ing-n ing-n-o">PEPPER<br>JACK</span></div>
+    <div class="ing ing-o"><span class="ing-i">≈</span><span class="ing-n ing-n-o">BARBECUE<br>ARTESANAL</span></div>
+  </div>
+  <div class="dsc dsc-o">Blend 200g selado em alta temperatura com queijo pepper jack derretido, jalapeño fresco, bacon crocante e molho barbecue artesanal no pão brioche tostado.</div>
+  <div class="price pr-o">R$ XX,XX</div>
+  <div class="ftr ftr-o"><span>SABOR QUE VEM DO FOGO</span><span>🔥</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S9 O LENHADOR (BRASA) ═══ -->
+<div class="slide sr" id="s9">
+  <div class="tbar tb-o"></div>
+  <div class="glow-o"></div>
+  <div class="particle" style="width:8px;height:8px;top:22vh;left:5vw;"></div>
+  <div class="particle" style="width:6px;height:6px;top:65vh;right:5vw;"></div>
+  <div class="ghost ghost-o">O</div>
+  <span class="lbl lbl-o">LINHA BRASA</span>
+  <div class="hname hname-o">O LENHADOR</div>
+  <div class="tag tag-o" style="margin-top:.8vh;">A Robustez do Churrasco Verdadeiro</div>
+  <div class="sep sep-o"><span class="sep-icon">🔥</span></div>
+  <div class="ings">
+    <div class="ing ing-o"><span class="ing-i">≈</span><span class="ing-n ing-n-o">GOUDA<br>DEFUMADO</span></div>
+    <div class="ing ing-o"><span class="ing-i">🥓</span><span class="ing-n ing-n-o">BACON<br>DEFUMADO</span></div>
+    <div class="ing ing-o"><span class="ing-i">🧅</span><span class="ing-n ing-n-o">CEBOLA<br>GRELHADA</span></div>
+    <div class="ing ing-o"><span class="ing-i">🍯</span><span class="ing-n ing-n-o">MOSTARDA<br>DE MEL</span></div>
+  </div>
+  <div class="dsc dsc-o">Blend 220g defumado com queijo gouda escuro, cebola roxa grelhada lentamente, bacon defumado artesanal e mostarda de mel no pão de cerveja preta.</div>
+  <div class="price pr-o">R$ XX,XX</div>
+  <div class="ftr ftr-o"><span>SABOR QUE VEM DO FOGO</span><span>🔥</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S10 A FUMAÇA (BRASA) ═══ -->
+<div class="slide sr" id="s10">
+  <div class="tbar tb-o"></div>
+  <div class="glow-o"></div>
+  <div class="particle" style="width:8px;height:8px;top:22vh;left:5vw;"></div>
+  <div class="particle" style="width:6px;height:6px;top:62vh;right:5vw;"></div>
+  <div class="ghost ghost-o">A</div>
+  <span class="lbl lbl-o">LINHA BRASA</span>
+  <div class="hname hname-o">A FUMAÇA</div>
+  <div class="tag tag-o" style="margin-top:.8vh;">Intensidade Que Fica no Paladar</div>
+  <div class="sep sep-o"><span class="sep-icon">🔥</span></div>
+  <div class="ings">
+    <div class="ing ing-o"><span class="ing-i">🌡️</span><span class="ing-n ing-n-o">DEFUMADO<br>LENTO</span></div>
+    <div class="ing ing-o"><span class="ing-i">🌶️</span><span class="ing-n ing-n-o">CHIPOTLE<br>CASEIRO</span></div>
+    <div class="ing ing-o"><span class="ing-i">🧀</span><span class="ing-n ing-n-o">CHEDDAR<br>ARTESANAL</span></div>
+    <div class="ing ing-o"><span class="ing-i">🧅</span><span class="ing-n ing-n-o">CEBOLA<br>CARAMELIZADA</span></div>
+  </div>
+  <div class="dsc dsc-o">Blend 200g defumado por horas com queijo cheddar artesanal derretido, cebola caramelizada, molho chipotle e alface roxa no pão de fermentação natural.</div>
+  <div class="price pr-o">R$ XX,XX</div>
+  <div class="ftr ftr-o"><span>SABOR QUE VEM DO FOGO</span><span>🔥</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S11 O FORNO (BRASA) ═══ -->
+<div class="slide sr" id="s11">
+  <div class="tbar tb-o"></div>
+  <div class="glow-o"></div>
+  <div class="particle" style="width:8px;height:8px;top:22vh;left:5vw;"></div>
+  <div class="particle" style="width:6px;height:6px;top:62vh;right:5vw;"></div>
+  <div class="ghost ghost-o">O</div>
+  <span class="lbl lbl-o">LINHA BRASA</span>
+  <div class="hname hname-o">O FORNO</div>
+  <div class="tag tag-o" style="margin-top:.8vh;">Gratinado com Paixão e Brasa</div>
+  <div class="sep sep-o"><span class="sep-icon">🔥</span></div>
+  <div class="ings">
+    <div class="ing ing-o"><span class="ing-i">🧀</span><span class="ing-n ing-n-o">BRIE<br>GRATINADO</span></div>
+    <div class="ing ing-o"><span class="ing-i">🍄</span><span class="ing-n ing-n-o">COGUMELOS<br>SALTEADOS</span></div>
+    <div class="ing ing-o"><span class="ing-i">🍷</span><span class="ing-n ing-n-o">REDUÇÃO<br>DE VINHO</span></div>
+    <div class="ing ing-o"><span class="ing-i">🔥</span><span class="ing-n ing-n-o">GRELHADO<br>NA BRASA</span></div>
+  </div>
+  <div class="dsc dsc-o">Blend 220g grelhado na brasa com queijo brie gratinado na hora, cogumelos paris salteados e redução de vinho tinto artesanal no pão italiano.</div>
+  <div class="price pr-o">R$ XX,XX</div>
+  <div class="ftr ftr-o"><span>SABOR QUE VEM DO FOGO</span><span>🔥</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S12 A BRASA — ASSINATURA ═══ -->
+<div class="slide sr" id="s12">
+  <div class="tbar tb-o"></div>
+  <div class="glow-o"></div>
+  <div class="particle" style="width:8px;height:8px;top:22vh;left:5vw;"></div>
+  <div class="particle" style="width:6px;height:6px;top:62vh;right:5vw;"></div>
+  <div class="ghost ghost-o">A</div>
+  <span class="lbl lbl-o">⭐ ASSINATURA BRASA</span>
+  <div class="hname hname-o">A BRASA</div>
+  <div class="tag tag-o" style="margin-top:.8vh;">A Alma do Churrasco Artesanal</div>
+  <div class="sep sep-o"><span class="sep-icon">⭐</span></div>
+  <div class="ings">
+    <div class="ing ing-o"><span class="ing-i">🔥</span><span class="ing-n ing-n-o">GRELHADO<br>NA BRASA</span></div>
+    <div class="ing ing-o"><span class="ing-i">🧄</span><span class="ing-n ing-n-o">ALHO<br>NEGRO</span></div>
+    <div class="ing ing-o"><span class="ing-i">🧀</span><span class="ing-n ing-n-o">CHEDDAR<br>ARTESANAL</span></div>
+    <div class="ing ing-o"><span class="ing-i">≈</span><span class="ing-n ing-n-o">MOLHO<br>DA CASA</span></div>
+  </div>
+  <div class="dsc dsc-o">Blend 200g grelhado diretamente na brasa de carvão com queijo cheddar artesanal, alho negro confitado e o nosso molho da casa no pão artesanal.</div>
+  <div class="price pr-o">R$ XX,XX</div>
+  <div class="ftr ftr-o"><span>SABOR QUE VEM DO FOGO</span><span>🔥</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S13 ACOMPANHAMENTOS ═══ -->
+<div class="slide sb" id="s13">
+  <div class="tbar tb-g"></div>
+  <div class="blob" style="width:20vw;height:24vw;background:rgba(107,143,113,.13);top:-3vh;left:-3vw;"></div>
+  <div class="blob" style="width:16vw;height:20vw;background:rgba(107,143,113,.1);bottom:7vh;right:-2vw;border-radius:40% 60% 30% 70%;"></div>
+  <div class="sico" style="color:var(--g);">🌿</div>
+  <span class="lbl lbl-g">ACOMPANHAMENTOS</span>
+  <div style="font-family:'Playfair Display',serif;font-size:clamp(34px,6vw,84px);font-weight:700;color:var(--g);text-align:center;margin-bottom:.6vh;">Extras</div>
+  <div class="tag tag-g" style="margin-bottom:2.8vh;">Para deixar o momento ainda mais perfeito</div>
+  <div class="acard">
+    <div class="aico">★</div>
+    <div class="ainf"><div class="aname">BATATA FRITA</div><div class="adsc">Fritas artesanais crocantes, levemente temperadas com ervas da casa e flor de sal.</div></div>
+    <div class="aprice">R$ XX,XX</div>
+  </div>
+  <div class="acard">
+    <div class="aico">✦</div>
+    <div class="ainf"><div class="aname">BATATA ESPECIAL</div><div class="adsc">Fritas crocantes cobertas com queijo cheddar derretido, bacon crocante e cebolinha.</div></div>
+    <div class="aprice">R$ XX,XX</div>
+  </div>
+  <div class="acard">
+    <div class="aico">🌿</div>
+    <div class="ainf"><div class="aname">MOLHO ADICIONAL</div><div class="adsc">Maionese de ervas, aioli de alho negro ou barbecue artesanal defumado.</div></div>
+    <div class="aprice">R$ XX,XX</div>
+  </div>
+  <div class="ftr ftr-g"><span>ESCOLHA O SEU FAVORITO</span><span>🌿</span><span>FEITO PARA FICAR NA MEMÓRIA</span></div>
+</div>
+
+<!-- ═══ S14 BEBIDAS ═══ -->
+<div class="slide sr" id="s14">
+  <div class="tbar tb-o"></div>
+  <div class="glow-o"></div>
+  <div class="particle" style="width:8px;height:8px;top:18vh;left:5vw;"></div>
+  <div class="particle" style="width:6px;height:6px;top:55vh;right:5vw;"></div>
+  <div class="particle" style="width:7px;height:7px;top:78vh;left:8vw;"></div>
+  <div class="sico" style="color:var(--or);">🥃</div>
+  <span class="lbl lbl-o">BEBIDAS</span>
+  <div style="font-family:'Playfair Display',serif;font-size:clamp(30px,5.5vw,76px);font-weight:700;color:var(--or);text-align:center;margin-bottom:.6vh;">Para Brindar</div>
+  <div class="dv dv-o" style="width:min(7vw,90px);margin:1vh auto 1.8vh;"></div>
+  <div style="display:flex;gap:4.5vw;align-items:flex-start;max-width:78vw;">
+    <div style="flex:1;">
+      <div class="dsec-lbl">REFRIGERANTES</div>
+      <div class="ditem"><span class="dname">Lata 350ml</span><span class="dprice">XX,XX</span></div>
+      <div class="ditem"><span class="dname">Garrafa 200ml</span><span class="dprice">XX,XX</span></div>
+      <div class="dsec-lbl" style="margin-top:1.3vh;">ÁGUA</div>
+      <div class="ditem"><span class="dname">Com Gás</span><span class="dprice">XX,XX</span></div>
+      <div class="ditem"><span class="dname">Sem Gás</span><span class="dprice">XX,XX</span></div>
+    </div>
+    <div style="width:1px;background:rgba(232,119,34,.18);align-self:stretch;"></div>
+    <div style="flex:1;">
+      <div class="dsec-lbl">SUCOS & ENERGÉTICOS</div>
+      <div class="ditem"><span class="dname">Suco Natural</span><span class="dprice">XX,XX</span></div>
+      <div class="ditem"><span class="dname">Red Bull 250ml</span><span class="dprice">XX,XX</span></div>
+      <div class="dsec-lbl" style="margin-top:1.3vh;">CERVEJAS</div>
+      <div class="ditem"><span class="dname">Heineken LongNeck</span><span class="dprice">XX,XX</span></div>
+      <div class="ditem"><span class="dname">Corona LongNeck</span><span class="dprice">XX,XX</span></div>
+    </div>
+  </div>
+  <div class="ftr ftr-o"><span>BRINDE COM ESTILO</span><span>🔥</span><span>CADA GOLE, UMA EXPERIÊNCIA</span></div>
+</div>
+
+<!-- ═══ S15 SHAKE NIGHT ═══ -->
+<div class="slide ss" id="s15">
+  <div class="tbar tb-pk"></div>
+  <div style="position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(233,30,140,.3);top:20vh;left:5vw;"></div>
+  <div style="position:absolute;width:5px;height:5px;border-radius:50%;background:rgba(155,89,182,.3);top:55vh;right:5vw;"></div>
+  <div style="position:absolute;width:7px;height:7px;border-radius:50%;background:rgba(233,30,140,.22);top:78vh;left:9vw;"></div>
+  <div class="sico">🍹</div>
+  <span class="lbl lbl-pk">MILKSHAKES ALCOÓLICOS</span>
+  <div style="font-family:'Playfair Display',serif;font-size:clamp(30px,5.5vw,76px);font-weight:700;color:#fff;text-align:center;margin-bottom:.4vh;">Shake Night</div>
+  <div class="dv dv-pk" style="width:min(7vw,90px);margin:.8vh auto;"></div>
+  <div class="tag tag-pk" style="margin-bottom:2.2vh;">Prazer gelado, alma quentinha</div>
+  <div class="shcard">
+    <div class="shico" style="border-color:var(--pk);color:var(--pk);">🍓</div>
+    <div class="shinf">
+      <div class="shname">Orvalho de Verão</div>
+      <div class="shcmb" style="color:var(--pk);">Morango & Vodka</div>
+      <div class="shdsc">Explosão de frescor com morango fresco, vodka premium e limão siciliano.</div>
+    </div>
+    <div class="shprice" style="background:var(--pk);">XX,XX</div>
+  </div>
+  <div class="shcard" style="border-color:rgba(200,170,50,.38);">
+    <div class="shico" style="border-color:#C8AA30;color:#C8AA30;font-size:clamp(12px,1.8vw,22px);">★</div>
+    <div class="shinf">
+      <div class="shname">Sopro de Baunilha</div>
+      <div class="shcmb" style="color:#C8AA30;">Baunilha & Bourbon</div>
+      <div class="shdsc">Baunilha do Madagascar, bourbon envelhecido e creme batido na hora.</div>
+    </div>
+    <div class="shprice" style="background:#C8AA30;">XX,XX</div>
+  </div>
+  <div class="shcard" style="border-color:rgba(155,89,182,.38);">
+    <div class="shico" style="border-color:var(--pu);color:var(--pu);">🍫</div>
+    <div class="shinf">
+      <div class="shname">Magma de Cacau</div>
+      <div class="shcmb" style="color:var(--pu);">Chocolate & Licor</div>
+      <div class="shdsc">Chocolate belga 70%, licor de cacau e chantilly artesanal.</div>
+    </div>
+    <div class="shprice" style="background:var(--pu);">XX,XX</div>
+  </div>
+  <div style="margin-top:1.4vh;text-align:center;font-size:clamp(6px,.78vw,10px);font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.3);">ADULTOS APENAS · BEBA COM MODERAÇÃO</div>
+</div>
+
+<!-- ═══ S16 CARDÁPIO COMPLETO ═══ -->
+<div class="slide fsplit" id="s16">
+  <div class="tbar tb-s" style="z-index:10;"></div>
+  <div class="fhalf fh-g">
+    <div class="blob" style="width:14vw;height:17vw;background:rgba(107,143,113,.12);top:-2vh;left:-2vw;"></div>
+    <div class="mlbl" style="color:var(--gm);margin-top:3.5vh;">LINHA BRISA</div>
+    <div class="dv dv-g" style="width:min(5vw,65px);margin:.7vh auto 2vh;"></div>
+    <div style="width:100%;">
+      <div class="mrow mr-g"><span>O Orvalho</span><span class="mpr mp-g">XX,XX</span></div>
+      <div class="mrow mr-g"><span>O Botânico</span><span class="mpr mp-g">XX,XX</span></div>
+      <div class="mrow mr-g"><span>A Ventania</span><span class="mpr mp-g">XX,XX</span></div>
+      <div class="mrow mr-g"><span>O Sereno</span><span class="mpr mp-g">XX,XX</span></div>
+      <div class="mrow mr-g"><span>A Brisa ⭐</span><span class="mpr mp-g">XX,XX</span></div>
+    </div>
+    <div class="mlbl" style="color:var(--gm);margin-top:2vh;">ACOMPANHAMENTOS</div>
+    <div style="width:100%;">
+      <div class="mrow mr-g"><span>Batata Frita</span><span class="mpr mp-g">XX,XX</span></div>
+      <div class="mrow mr-g"><span>Batata Especial</span><span class="mpr mp-g">XX,XX</span></div>
+      <div class="mrow mr-g"><span>Molho Adicional</span><span class="mpr mp-g">XX,XX</span></div>
+    </div>
+  </div>
+  <!-- CENTER BADGE -->
+  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;width:clamp(62px,7vw,96px);height:clamp(62px,7vw,96px);border-radius:50%;background:#fff;border:3px solid var(--or);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 4px 22px rgba(0,0,0,.22);">
+    <div style="font-size:clamp(8px,1.2vw,14px);font-weight:800;color:#1A0F0A;line-height:1.3;">MENU</div>
+  </div>
+  <div style="position:absolute;top:5px;left:50%;width:2px;bottom:0;background:linear-gradient(180deg,var(--g),var(--or));z-index:1;"></div>
+  <div class="fhalf fh-r">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:25vh;background:radial-gradient(ellipse at center bottom,rgba(232,119,34,.22) 0%,transparent 70%);pointer-events:none;"></div>
+    <div class="mlbl" style="color:var(--or);margin-top:3.5vh;">LINHA BRASA</div>
+    <div class="dv dv-o" style="width:min(5vw,65px);margin:.7vh auto 2vh;"></div>
+    <div style="width:100%;">
+      <div class="mrow mr-o"><span>A Chama</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>O Lenhador</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>A Fumaça</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>O Forno</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>A Brasa ⭐</span><span class="mpr mp-o">XX,XX</span></div>
+    </div>
+    <div class="mlbl" style="color:var(--or);margin-top:2vh;">BEBIDAS & SHAKES</div>
+    <div style="width:100%;">
+      <div class="mrow mr-o"><span>Refrigerante Lata</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>Água c/ ou s/ Gás</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>Suco Natural</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>Red Bull</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>Heineken / Corona</span><span class="mpr mp-o">XX,XX</span></div>
+      <div class="mrow mr-o"><span>Shake Alcoólico</span><span class="mpr mp-o">XX,XX</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S17 FINAL / CONTATO ═══ -->
+<div class="slide sf" id="s17">
+  <div class="tbar tb-s"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(232,119,34,.1) 0%,rgba(45,90,61,.1) 50%,transparent 70%);pointer-events:none;"></div>
+  <div style="text-align:center;margin-bottom:1.8vh;">
+    <span style="font-size:clamp(20px,3vw,42px);margin-right:1vw;">🌿</span>
+    <span style="font-size:clamp(22px,3.5vw,50px);">🔥</span>
+    <span style="font-size:clamp(20px,3vw,42px);margin-left:1vw;">🌿</span>
+  </div>
+  <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(14px,2.2vw,30px);color:rgba(255,255,255,.65);margin-bottom:.5vh;text-align:center;">"Sinta a Brisa, prove a Brasa"</div>
+  <div style="font-size:clamp(48px,10vw,140px);font-weight:900;text-align:center;line-height:.9;letter-spacing:.05em;background:linear-gradient(90deg,var(--gm),var(--or));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:1.5vh 0;">B&B</div>
+  <div style="font-size:clamp(8px,.9vw,12px);font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.35);text-align:center;margin-bottom:3vh;">BRISA & BRASA — ITAJUBÁ · MG</div>
+  <div style="display:flex;gap:2vw;flex-wrap:wrap;justify-content:center;">
+    <div class="ccard">
+      <div class="ccl">TELEFONE</div>
+      <div class="ccv">(xx) xxxxx-xxxx</div>
+    </div>
+    <div class="ccard">
+      <div class="ccl">INSTAGRAM</div>
+      <div class="ccv">@brisaebrasa.itajuba</div>
+    </div>
+  </div>
+  <div style="margin-top:2.8vh;display:flex;align-items:center;gap:1.5vw;justify-content:center;">
+    <span style="font-size:clamp(12px,1.5vw,20px);color:var(--or);">🔥</span>
+    <div style="background:var(--or);color:#fff;font-size:clamp(12px,1.5vw,20px);font-weight:800;letter-spacing:.25em;text-transform:uppercase;padding:1.3vh 4vw;border-radius:50px;box-shadow:0 4px 22px rgba(232,119,34,.4);">PEÇA AGORA</div>
+    <span style="font-size:clamp(12px,1.5vw,20px);color:var(--or);">🔥</span>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- NAV BUTTONS -->
+<button class="nbtn" id="pb">&#8249;</button>
+<button class="nbtn" id="nb">&#8250;</button>
+
+<!-- PROGRESS + COUNTER -->
+<div id="pgbar"></div>
+<div id="ctr"></div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const N = slides.length;
+  let cur = 0, animating = false;
+
+  const pgbar = document.getElementById('pgbar');
+  const ctrEl = document.getElementById('ctr');
+  const pbtn  = document.getElementById('pb');
+  const nbtn  = document.getElementById('nb');
+
+  function update(){
+    ctrEl.textContent = (cur + 1) + ' / ' + N;
+    pgbar.style.width = ((cur + 1) / N * 100) + '%';
+    pbtn.style.opacity = cur === 0 ? '.28' : '1';
+    nbtn.style.opacity = cur === N-1 ? '.28' : '1';
+  }
+
+  function go(n){
+    if(animating || n < 0 || n >= N || n === cur) return;
+    animating = true;
+    const prev = cur;
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('leaving');
+    cur = n;
+    slides[cur].classList.add('active');
+    setTimeout(()=>{ slides[prev].classList.remove('leaving'); animating = false; }, 600);
+    update();
+  }
+
+  pbtn.onclick = ()=>go(cur - 1);
+  nbtn.onclick = ()=>go(cur + 1);
+
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown') go(cur+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(cur-1);
+  });
+
+  let tx=0;
+  document.addEventListener('touchstart', e=>{ tx=e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', e=>{
+    const dx = e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>55) go(dx<0 ? cur+1 : cur-1);
+  }, {passive:true});
+
+  update();
+})();
+</script>
+</body>
+</html>
